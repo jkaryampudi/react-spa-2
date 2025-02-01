@@ -29,17 +29,6 @@ const PUBLIC_CLIENT_APPLICATION = new PublicClientApplication(MSAL_CONFIG);
 async function initializeMsal() {
     await PUBLIC_CLIENT_APPLICATION.initialize();
     
-    try {
-        const accounts = PUBLIC_CLIENT_APPLICATION.getAllAccounts();
-        if (accounts.length > 0) {
-            console.log("User already signed in:", accounts[0]);
-            return;
-        }
-        console.log("User not signed in, redirecting...");
-        await PUBLIC_CLIENT_APPLICATION.loginRedirect(LOGIN_REQUEST);
-    } catch (error) {
-        console.error("MSAL Initialization Error:", error);
-    }
 }
 
 initializeMsal();
