@@ -7,13 +7,13 @@ const MSAL_CONFIG = {
         redirectUri: "https://salmon-stone-00ae7060f.4.azurestaticapps.net",
     },
     cache: {
-        cacheLocation: "localStorage",
-        storeAuthStateInCookie: false,
+        cacheLocation: "sessionStorage",
+        storeAuthStateInCookie: true,
     },
 };
 
 const LOGIN_REQUEST = {
-    scopes: ["openid", "offline_access"]
+    scopes: ["openid", "offline_access","User.Read"]
 };
 
 const TOKEN_REQUEST = {
