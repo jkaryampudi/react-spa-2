@@ -13,7 +13,7 @@ const MSAL_CONFIG = {
 };
 
 const LOGIN_REQUEST = {
-    scopes: ["openid", "profile", "offline_access", "User.Read"]
+    scopes: ["openid", "profile", "offline_access", "User.Read","https://your-salesforce-instance.salesforce.com/.default"]
 };
 
 const TOKEN_REQUEST = {
