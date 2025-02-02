@@ -18,7 +18,7 @@ const getSalesforceAccessToken = async () => {
 
         // Get Azure Access Token using MSAL
         const tokenResponse = await PUBLIC_CLIENT_APPLICATION.acquireTokenSilent({
-            scopes: SALESFORCE_TOKEN_REQUEST.scopes,
+            scopes: LOGIN_REQUEST.scopes,
             account: account
         });
 
