@@ -4,7 +4,7 @@ import { exchangeAzureTokenForSalesforce } from "./salesforceAuth"; // Import to
 const SALESFORCE_API_URL = "https://storm-eb707416e288b6.my.salesforce.com/services/data/v62.0/sobjects/User/me"; // Update instance & API version
 
 /**
- * Retrieves the Salesforce access token by first obtaining an Azure token
+ * dRetrieves the Salesforce access token by first obtaining an Azure token
  * and then exchanging it for a Salesforce token.
  */
 const getSalesforceAccessToken = async () => {
