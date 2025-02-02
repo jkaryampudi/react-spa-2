@@ -16,6 +16,10 @@ const LOGIN_REQUEST = {
     scopes: ["openid", "profile", "offline_access", "User.Read"]
 };
 
+const SALESFORCE_TOKEN_REQUEST = {
+    scopes: ["https://storm-eb707416e288b6.my.salesforce.com/.default"]
+};
+
 const TOKEN_REQUEST = {
     scopes: ["User.ReadWrite.All"]
 };
