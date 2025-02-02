@@ -1,4 +1,4 @@
-import { PUBLIC_CLIENT_APPLICATION } from "./msalConfig";
+import { PUBLIC_CLIENT_APPLICATION, SALESFORCE_TOKEN_REQUEST } from "./msalConfig";
 
 const SALESFORCE_API_URL = "https://storm-eb707416e288b6.my.salesforce.com/services/data/v53.0/sobjects/User/me"; // Update instance & API version
 
