@@ -12,7 +12,7 @@ async function getSalesforceAccessToken() {
         }
 
         const tokenResponse = await PUBLIC_CLIENT_APPLICATION.acquireTokenSilent({
-            scopes: ["https://storm-eb707416e288b6.my.salesforce.com/.default"],
+            scopes: SALESFORCE_TOKEN_REQUEST.scopes,
             account: account
         });
 
