@@ -1,4 +1,4 @@
-const SALESFORCE_TOKEN_URL = "https://login.salesforce.com/services/oauth2/token"; // Update for sandbox if needed
+const SALESFORCE_TOKEN_URL = "https://salesforce-proxy-api.azure-api.net/get-salesforce-token"; // Update for sandbox if needed
 
 /**
  * Exchanges an Azure Access Token for a Salesforce Access Token.
@@ -9,7 +9,6 @@ export const exchangeAzureTokenForSalesforce = async (azureToken) => {
     try {
         const response = await fetch(SALESFORCE_TOKEN_URL, {
             method: "POST",
-            mode: "no-cors",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: new URLSearchParams({
                 grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
