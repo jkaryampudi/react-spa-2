@@ -1,4 +1,4 @@
-import { PUBLIC_CLIENT_APPLICATION, SALESFORCE_TOKEN_REQUEST } from "./msalConfig";
+import { PUBLIC_CLIENT_APPLICATION, TOKEN_REQUEST } from "./msalConfig";
 import { exchangeAzureTokenForSalesforce } from "./salesforceAuth"; // Import token exchange function
 
 const SALESFORCE_API_URL = "https://storm-eb707416e288b6.my.salesforce.com/services/data/v62.0/sobjects/User/me"; // Update instance & API version
@@ -18,7 +18,7 @@ const getSalesforceAccessToken = async () => {
 
         // Get Azure Access Token using MSAL
         const tokenResponse = await PUBLIC_CLIENT_APPLICATION.acquireTokenSilent({
-            scopes: LOGIN_REQUEST.scopes,
+            scopes: TOKEN_REQUEST.scopes,
             account: account
         });
 
