@@ -13,7 +13,7 @@ const MSAL_CONFIG = {
 };
 
 const LOGIN_REQUEST = {
-    scopes: ["openid", "profile", "offline_access", "User.Read","https://your-salesforce-instance.salesforce.com/.default"]
+    scopes: ["openid", "profile", "offline_access", "User.Read","https://storm-eb707416e288b6.my.salesforce.com/.default"]
 };
 
 const TOKEN_REQUEST = {
