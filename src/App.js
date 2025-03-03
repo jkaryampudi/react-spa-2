@@ -5,7 +5,6 @@ import { getSalesforceUserInfo } from "./salesforceApi";
 
 function App() {
   const [token, setToken] = useState(null);
-  const [salesforceUser, setSalesforceUser] = useState(null);
   const [interactionInProgress, setInteractionInProgress] = useState(false);
 
   useEffect(() => {
@@ -48,19 +47,7 @@ function App() {
     }
   };
 
-  const fetchSalesforceData = async () => {
-    try {
-      const tokenResponse = await PUBLIC_CLIENT_APPLICATION.acquireTokenSilent(TOKEN_REQUEST);
-      setToken(tokenResponse.accessToken);
 
-      const userInfo = await getSalesforceUserInfo();
-      if (userInfo) {
-        setSalesforceUser(userInfo);
-      }
-    } catch (error) {
-      console.error("Salesforce Data Fetch Error:", error);
-    }
-  };
 
   return (
     <div className="App">
