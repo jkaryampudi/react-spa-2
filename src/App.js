@@ -1,18 +1,15 @@
-import { useState, useEffect } from 'react';
-import './App.css';
-import { LOGIN_REQUEST, PUBLIC_CLIENT_APPLICATION, TOKEN_REQUEST } from './msalConfig';
-import { getSalesforceUserInfo } from "./salesforceApi";
+import { useState, useEffect } from "react";
+import "./App.css";
+import { LOGIN_REQUEST, PUBLIC_CLIENT_APPLICATION, TOKEN_REQUEST } from "./msalConfig";
 
 function App() {
   const [token, setToken] = useState(null);
   const [interactionInProgress, setInteractionInProgress] = useState(false);
 
   useEffect(() => {
-    // Check if the user is already logged in on page load
     const account = PUBLIC_CLIENT_APPLICATION.getAllAccounts()[0];
     if (account) {
       PUBLIC_CLIENT_APPLICATION.setActiveAccount(account);
-      fetchSalesforceData();
     }
   }, []);
 
@@ -21,8 +18,8 @@ function App() {
       const loginResponse = await PUBLIC_CLIENT_APPLICATION.loginPopup(LOGIN_REQUEST);
       if (loginResponse.account) {
         PUBLIC_CLIENT_APPLICATION.setActiveAccount(loginResponse.account);
+        await handleRefreshToken(); // Get token after login
       }
-      //fetchSalesforceData();
     } catch (error) {
       console.error("Login Error:", error);
     }
@@ -31,9 +28,12 @@ function App() {
   const handleSignOut = async () => {
     if (!interactionInProgress) {
       setInteractionInProgress(true);
-      await PUBLIC_CLIENT_APPLICATION.logout();
+      try {
+        await PUBLIC_CLIENT_APPLICATION.logoutPopup();
+      } catch (error) {
+        console.error("Logout Error:", error);
+      }
       setToken(null);
-      setSalesforceUser(null);
       setInteractionInProgress(false);
     }
   };
@@ -47,25 +47,28 @@ function App() {
     }
   };
 
-
-
   return (
     <div className="App">
-      <h1>React.JS Azure AD Authentication with MSAL.js & Salesforce</h1>
-      
+      <h1>React.JS Azure AD Authentication with MSAL.js</h1>
+
       {token ? (
         <div>
-          <p style={{ color: 'green', fontSize: '20px', fontWeight: 'bold' }}>
+          <p style={{ color: "green", fontSize: "20px", fontWeight: "bold" }}>
             You are authenticated!
           </p>
           <p>Your access token:</p>
-          <p style={{
-            color: 'blue', fontSize: '16px', fontWeight: 'bold',
-            width: "80%", wordWrap: "break-word", margin: "auto"
-          }}>
+          <p
+            style={{
+              color: "blue",
+              fontSize: "16px",
+              fontWeight: "bold",
+              width: "80%",
+              wordWrap: "break-word",
+              margin: "auto",
+            }}
+          >
             {token}
           </p>
-
 
           <button onClick={handleRefreshToken} style={{ margin: "10px" }}>
             Refresh Token
@@ -77,7 +80,7 @@ function App() {
         </div>
       ) : (
         <div>
-          <p style={{ color: 'red', fontSize: '20px', fontWeight: 'bold' }}>
+          <p style={{ color: "red", fontSize: "20px", fontWeight: "bold" }}>
             You are not authenticated!
           </p>
           <p>Please click the button below to login.</p>
