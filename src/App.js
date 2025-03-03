@@ -9,20 +9,24 @@ function App() {
   const [userEmail, setUserEmail] = useState(null);
   const [interactionInProgress, setInteractionInProgress] = useState(false);
 
+  // 🔹 Fetch Azure AD B2C token & check if user is logged in
   useEffect(() => {
     const account = PUBLIC_CLIENT_APPLICATION.getAllAccounts()[0];
     if (account) {
       PUBLIC_CLIENT_APPLICATION.setActiveAccount(account);
       handleRefreshToken();
     }
+  }, []);
 
+  // 🔹 Fetch Salesforce token if authorization code is available
+  useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const authCode = urlParams.get("code");
 
     if (authCode && !salesforceToken) {
       handleSalesforceLogin(authCode);
     }
-  }, []);
+  }, [salesforceToken]); // ✅ Best Practice: Only re-run if `salesforceToken` changes
 
   // 🔹 Azure AD B2C Login
   const handleSignIn = async () => {
@@ -67,7 +71,7 @@ function App() {
     }
   };
 
-  // 🔹 Salesforce Login
+  // 🔹 Salesforce Login (Exchanges auth code for access token)
   const handleSalesforceLogin = async (authCode) => {
     try {
       const token = await exchangeCodeForToken(authCode);
@@ -77,20 +81,24 @@ function App() {
     }
   };
 
-  // 🔹 Redirect to Salesforce Login
+  // 🔹 Redirect to Salesforce Login Page
   const redirectToSalesforceLogin = () => {
     window.location.href = getSalesforceAuthUrl();
   };
 
   // 🔹 Seamless SSO to Salesforce Experience Cloud
-  const goToExperienceCloud = () => {
+  const goToExperienceCloud = async () => {
     if (!salesforceToken || !userEmail) {
       alert("Please log in first!");
       return;
     }
 
-    const ssoUrl = generateSalesforceSSOUrl(salesforceToken, userEmail);
-    window.location.href = ssoUrl;
+    const ssoUrl = await generateSalesforceSSOUrl(salesforceToken, userEmail);
+    if (ssoUrl) {
+      window.location.href = ssoUrl;
+    } else {
+      console.error("Failed to generate SSO URL.");
+    }
   };
 
   return (
