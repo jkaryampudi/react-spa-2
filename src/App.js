@@ -23,7 +23,7 @@ function App() {
       if (loginResponse.account) {
         PUBLIC_CLIENT_APPLICATION.setActiveAccount(loginResponse.account);
       }
-      fetchSalesforceData();
+      //fetchSalesforceData();
     } catch (error) {
       console.error("Login Error:", error);
     }
