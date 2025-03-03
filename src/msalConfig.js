@@ -2,10 +2,10 @@ import { PublicClientApplication } from "@azure/msal-browser";
 
 const MSAL_CONFIG = {
     auth: {
-        clientId: "8838d638-ab81-4618-a2f3-8b599deac91d",
+        clientId: "e5c9d570-3d8e-47c6-9f2c-ded134328a55",
         /*clientId: "3e7276ba-2bdf-47b6-a5eb-4917c55727b8",*/
-        authority: "https://login.microsoftonline.com/d3ad2e7f-49fe-4b21-88e1-58b4700e6a3b", // Tenant-specific
-        redirectUri: "https://salmon-stone-00ae7060f.4.azurestaticapps.net",
+        authority: "https://login.microsoftonline.com/527eb7c2-9b68-4770-8060-daf7ee6932db", // Tenant-specific
+        redirectUri: "https://gray-stone-07c20f810.6.azurestaticapps.net",
     },
     cache: {
         cacheLocation: "sessionStorage",
