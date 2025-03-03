@@ -79,17 +79,6 @@ function App() {
             {token}
           </p>
 
-          {/* Display Salesforce User Info */}
-          {salesforceUser ? (
-            <div>
-              <h2>Salesforce User Info</h2>
-              <p><strong>Name:</strong> {salesforceUser.name}</p>
-              <p><strong>Email:</strong> {salesforceUser.email}</p>
-              <p><strong>Username:</strong> {salesforceUser.username}</p>
-            </div>
-          ) : (
-            <p>Loading Salesforce user info...</p>
-          )}
 
           <button onClick={handleRefreshToken} style={{ margin: "10px" }}>
             Refresh Token
