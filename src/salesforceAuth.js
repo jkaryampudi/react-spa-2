@@ -1,34 +1,56 @@
-const SALESFORCE_TOKEN_URL = "https://salesforce-proxy-api.azure-api.net/get-salesforce-token"; // Update for sandbox if needed
+import axios from "axios";
+import jwt from "jsonwebtoken";
+import { SALESFORCE_CONFIG } from "./salesforceConfig";
 
-/**
- * Exchanges an Azure Access Token for a Salesforce Access Token.
- * @param {string} azureToken - The Azure AD access token.
- * @returns {Promise<string|null>} - The Salesforce access token or null if failed.
- */
-export const exchangeAzureTokenForSalesforce = async (azureToken) => {
-    try {
-        const response = await fetch(SALESFORCE_TOKEN_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: new URLSearchParams({
-                grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
-                client_id: "3MVG95nWQGdmAiErDZVgS8zk.IlOdJaZfVaEbb4IIAz_McJWhlxWTu8N_WXxfL6xLV7la2sUJgkVjG2dz9wUW",  // Store in .env for security
-                client_secret: "45047B6DD97E6B1EC511BE8E972B846459E1F1671B2BE5E9E6F905EF4FA8C054", // Store in .env
-                assertion: azureToken // Use Azure AD Access Token here
-            }),
-        });
+// 🔹 Generate Salesforce Authorization URL
+export const getSalesforceAuthUrl = () => {
+  const params = new URLSearchParams({
+    response_type: "code",
+    client_id: SALESFORCE_CONFIG.clientId,
+    redirect_uri: SALESFORCE_CONFIG.redirectUri,
+  });
 
-        const data = await response.json();
+  return `${SALESFORCE_CONFIG.authUrl}?${params.toString()}`;
+};
 
-        if (data.access_token) {
-            console.log("Salesforce Access Token Retrieved:", data.access_token);
-            return data.access_token;
-        } else {
-            console.error("Salesforce Token Exchange Failed:", data);
-            return null;
-        }
-    } catch (error) {
-        console.error("Error exchanging Azure token for Salesforce token:", error);
-        return null;
-    }
+// 🔹 Exchange Authorization Code for Access Token
+export const exchangeCodeForToken = async (authCode) => {
+  const params = new URLSearchParams({
+    grant_type: "authorization_code",
+    client_id: SALESFORCE_CONFIG.clientId,
+    client_secret: SALESFORCE_CONFIG.clientSecret,
+    redirect_uri: SALESFORCE_CONFIG.redirectUri,
+    code: authCode,
+  });
+
+  try {
+    const response = await axios.post(SALESFORCE_CONFIG.tokenUrl, params);
+    return response.data.access_token;
+  } catch (error) {
+    console.error("Salesforce Token Exchange Error:", error);
+    throw error;
+  }
+};
+
+// 🔹 Generate SSO URL for Salesforce Experience Cloud
+export const generateSalesforceSSOUrl = (accessToken, userEmail) => {
+  if (!accessToken || !userEmail) {
+    console.error("Missing required parameters for SSO URL.");
+    return null;
+  }
+
+  const jwtPayload = {
+    iss: SALESFORCE_CONFIG.clientId, // Azure B2C Client ID
+    sub: userEmail, // User's Email
+    aud: SALESFORCE_CONFIG.authUrl, // Salesforce Audience (Authorization URL)
+    exp: Math.floor(Date.now() / 1000) + 60 * 5, // Expires in 5 minutes
+  };
+
+  // 🔹 Sign JWT Token using Azure B2C Client Secret
+  const signedToken = jwt.sign(jwtPayload, SALESFORCE_CONFIG.clientSecret, {
+    algorithm: "HS256",
+  });
+
+  // 🔹 Form SSO Redirect URL for Experience Cloud
+  return `${SALESFORCE_CONFIG.experienceCloudUrl}?id_token=${signedToken}`;
 };
