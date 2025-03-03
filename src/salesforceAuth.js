@@ -1,5 +1,5 @@
 import axios from "axios";
-import jwt from "jsonwebtoken";
+import { SignJWT } from "jose";
 import { SALESFORCE_CONFIG } from "./salesforceConfig";
 
 // 🔹 Generate Salesforce Authorization URL
@@ -13,7 +13,7 @@ export const getSalesforceAuthUrl = () => {
   return `${SALESFORCE_CONFIG.authUrl}?${params.toString()}`;
 };
 
-// 🔹 Exchange Authorization Code for Access Token
+// 🔹 Exchange Authorization Code for Salesforce Access Token
 export const exchangeCodeForToken = async (authCode) => {
   const params = new URLSearchParams({
     grant_type: "authorization_code",
@@ -32,8 +32,8 @@ export const exchangeCodeForToken = async (authCode) => {
   }
 };
 
-// 🔹 Generate SSO URL for Salesforce Experience Cloud
-export const generateSalesforceSSOUrl = (accessToken, userEmail) => {
+// 🔹 Generate SSO URL for Salesforce Experience Cloud using `jose`
+export const generateSalesforceSSOUrl = async (accessToken, userEmail) => {
   if (!accessToken || !userEmail) {
     console.error("Missing required parameters for SSO URL.");
     return null;
@@ -43,14 +43,22 @@ export const generateSalesforceSSOUrl = (accessToken, userEmail) => {
     iss: SALESFORCE_CONFIG.clientId, // Azure B2C Client ID
     sub: userEmail, // User's Email
     aud: SALESFORCE_CONFIG.authUrl, // Salesforce Audience (Authorization URL)
-    exp: Math.floor(Date.now() / 1000) + 60 * 5, // Expires in 5 minutes
+    exp: Math.floor(Date.now() / 1000) + 60 * 5, // 5-minute expiry
   };
 
-  // 🔹 Sign JWT Token using Azure B2C Client Secret
-  const signedToken = jwt.sign(jwtPayload, SALESFORCE_CONFIG.clientSecret, {
-    algorithm: "HS256",
-  });
+  try {
+    // Encode client secret for signing the JWT
+    const encoder = new TextEncoder();
+    const secretKey = encoder.encode(SALESFORCE_CONFIG.clientSecret);
 
-  // 🔹 Form SSO Redirect URL for Experience Cloud
-  return `${SALESFORCE_CONFIG.experienceCloudUrl}?id_token=${signedToken}`;
+    // Sign JWT using `jose` (browser-friendly)
+    const signedToken = await new SignJWT(jwtPayload)
+      .setProtectedHeader({ alg: "HS256" })
+      .sign(secretKey);
+
+    return `${SALESFORCE_CONFIG.experienceCloudUrl}?id_token=${signedToken}`;
+  } catch (error) {
+    console.error("Error generating JWT for Salesforce SSO:", error);
+    return null;
+  }
 };
