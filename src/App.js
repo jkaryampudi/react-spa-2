@@ -38,14 +38,25 @@ function App() {
     }
   };
 
-  const handleRefreshToken = async () => {
-    try {
-      const tokenResponse = await PUBLIC_CLIENT_APPLICATION.acquireTokenSilent(TOKEN_REQUEST);
-      setToken(tokenResponse.accessToken);
-    } catch (error) {
+const handleRefreshToken = async () => {
+  try {
+    const tokenResponse = await PUBLIC_CLIENT_APPLICATION.acquireTokenSilent(TOKEN_REQUEST);
+    setToken(tokenResponse.accessToken);
+  } catch (error) {
+    if (error.name === "InteractionRequiredAuthError") {
+      console.warn("Token refresh failed, prompting user...");
+      try {
+        const interactiveResponse = await PUBLIC_CLIENT_APPLICATION.acquireTokenPopup(TOKEN_REQUEST);
+        setToken(interactiveResponse.accessToken);
+      } catch (popupError) {
+        console.error("Interactive login failed:", popupError);
+      }
+    } else {
       console.error("Token Refresh Error:", error);
     }
-  };
+  }
+};
+
 
   return (
     <div className="App">
