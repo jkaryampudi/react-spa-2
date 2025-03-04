@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 import { LOGIN_REQUEST, PUBLIC_CLIENT_APPLICATION } from "./msalConfig";
-import { getSalesforceAuthUrl, exchangeCodeForToken, generateSalesforceSSOUrl } from "./salesforceAuth";
+import { generateSalesforceSSOUrl } from "./salesforceAuth"; // Only keeping the required function
 
 function App() {
   const [azureUser, setAzureUser] = useState(null);
-  const [salesforceToken, setSalesforceToken] = useState(null);
-  const [userEmail, setUserEmail] = useState(null);
+  const [salesforceToken, setSalesforceToken] = useState(null); // Now being used in goToExperienceCloud
 
   useEffect(() => {
     const accounts = PUBLIC_CLIENT_APPLICATION.getAllAccounts();
@@ -31,15 +30,16 @@ function App() {
   const handleLogout = async () => {
     await PUBLIC_CLIENT_APPLICATION.logoutPopup();
     setAzureUser(null);
+    setSalesforceToken(null);
   };
 
   const goToExperienceCloud = async () => {
-    if (!salesforceToken || !userEmail) {
+    if (!salesforceToken || !azureUser?.username) {
       alert("Please log in first!");
       return;
     }
 
-    const ssoUrl = await generateSalesforceSSOUrl(salesforceToken, userEmail);
+    const ssoUrl = await generateSalesforceSSOUrl(salesforceToken, azureUser.username);
     if (ssoUrl) {
       window.location.href = ssoUrl;
     } else {
