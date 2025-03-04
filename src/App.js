@@ -5,7 +5,6 @@ import { generateSalesforceSSOUrl } from "./salesforceAuth";
 
 function App() {
   const [azureUser, setAzureUser] = useState(null);
-  const [salesforceToken, setSalesforceToken] = useState(null);
 
   // ✅ Check if user is already logged in on page load
   useEffect(() => {
@@ -34,7 +33,6 @@ function App() {
   const handleLogout = async () => {
     await PUBLIC_CLIENT_APPLICATION.logoutPopup();
     setAzureUser(null);
-    setSalesforceToken(null);
   };
 
   // ✅ Ensure user is logged in & fetch access token before SSO
@@ -47,7 +45,6 @@ function App() {
     try {
       // Fetch new access token for SSO
       const tokenResponse = await PUBLIC_CLIENT_APPLICATION.acquireTokenSilent(LOGIN_REQUEST);
-      setSalesforceToken(tokenResponse.accessToken);
 
       // Generate Salesforce SSO URL
       const ssoUrl = await generateSalesforceSSOUrl(tokenResponse.accessToken, azureUser.username);
